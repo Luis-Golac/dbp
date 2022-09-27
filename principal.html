@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simula tu Credito</title>
+    <style>
+        .simulacion{
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="form" >
+        <form id="formulario">
+            <h1>Bienvenid@ a Simula tu Credito! :)</h1>
+            <b>Nombres: <input type="text" id="nombres" name="nombres" required > <br> <br> </b>
+            <b>Apellidos: </hr> <input type="text" id="apellidos" name="apellidos" required> <br> <br></b>
+            <b>Sexo: </hr> <input type="text" id="sexo" name="sexo" required> <br> <br></b></b>
+            <b> Tipo de documento:
+                <select id="tipo_doc" name="tipo_doc" required>
+                    <option value="">Selecciona tu tipo de documento</option>
+                    <option value="dni">DNI</option>
+                    <option value="pasaporte">Pasaporte</option>
+                </select> <br> <br></b>
+            <b>Numero de documento: </hr> <input type="text" id="num_doc" name="num_doc" required> <br> <br></b>
+            <b>Email: </hr> <input type="email" id="Email" name="Email" required> <br> <br></b>
+            <b>Valor de Vehiculo en Soles [40000, 100000> : <input type="number" id="Valor_vehic_sol"
+                    name="Valor_vehic_sol" min="40000" max="99999" required><br> <br></b>
+            <b>Monto de Cuota Inicial: <input type="number" id="Monto" name="Monto" required><br> <br></b>
+
+            <input type="submit" value="Simular" id="click"/>
+        </form>
+        <hr>
+    </div>
+    <div class="simulacion" id="simulacion">
+        Resultado de la simulacion:
+        <div class="resultado" id="resultado">
+
+        </div>
+        <button id="redirect"> Hacer otra simulacion</button>
+    </div>
+</body>
+<script>
+    
+
+
+
+
+    
+    
+
+    //Insert new simulacion
+    const nombreInput = document.getElementById('nombres');
+    
+    
+    document.getElementById('formulario').onsubmit = function(e){
+        e.preventDefault();
+        const nombres = nombreInput.value;
+        const apellidos = document.getElementById('apellidos').value;
+        const sexo = document.getElementById('apellidos').value;
+        const tipo_doc = document.getElementById('tipo_doc').value;
+        const num_doc = document.getElementById('num_doc').value;
+        const Email = document.getElementById('Email').value;
+        const Valor_vehic_sol = document.getElementById('Valor_vehic_sol').value;
+        const Monto = document.getElementById('Monto').value;
+        fetch('/Simular', {
+            method: 'POST',
+            body: JSON.stringify({
+                'nombres': nombres,
+                'apellidos': apellidos,
+                'sexo': sexo,
+                'tipo_doc': tipo_doc,
+                'num_doc': num_doc,
+                'Email':Email,
+                'Valor_vehic_sol':Valor_vehic_sol,
+                'Monto': Monto
+            }),
+            headers:{
+                'Content-Type': 'application/json'
+            }
+        }).then(response => {
+            console.log('response: ', response);
+            return response.json();
+        }).then(function(jsonResponse){
+            console.log("jsonResponse: ", jsonResponse);
+            var form = document.querySelector(".form");
+            var simulacion = document.querySelector(".simulacion");
+            const h2 = document.createElement('h2');
+            if (jsonResponse['status'] == true) {
+                const status = document.createTextNode(
+                    'Usted está apto para el prestamo! :D'
+                )
+                form.style.display = "none";
+                simulacion.style.display="block";
+                h2.appendChild(status);
+                document.getElementById('resultado').appendChild(h2);
+                document.getElementById('resultado').style.color='blue'
+            }
+            else{
+                const status = document.createTextNode(
+                    'No apto para el prestamo. D:'
+                )
+                form.style.display = "none";
+                simulacion.style.display="block";
+                h2.appendChild(status);
+                document.getElementById('resultado').appendChild(h2);
+                document.getElementById('resultado').style.color='red'
+            }
+            
+            
+
+
+            document.getElementById('nombres').value = '';
+            document.getElementById('apellidos').value = '';
+            document.getElementById('sexo').value = '';
+            document.getElementById('tipo_doc').value = '';
+            document.getElementById('num_doc').value = '';
+            document.getElementById('Email').value = '';
+            document.getElementById('Valor_vehic_sol').value = '';
+            document.getElementById('Monto').value = '';
+        })
+    }
+
+    //otro intento
+    document.getElementById('simulacion').onclick = function(e){
+        e.preventDefault();
+        var form = document.querySelector(".form");
+        var simulacion = document.querySelector(".simulacion");
+        form.style.display = "block";
+        simulacion.style.display="none";
+        var intent = document.getElementById('resultado');
+        intent.removeChild(intent.lastChild);
+
+    }
+
+</script>
+
+</html>
